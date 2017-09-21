@@ -1,0 +1,38 @@
+<h3>课程信息管理</h3>
+<hr>
+<table>
+	<tbody>
+		<tr>
+			<th>编号</th>
+			<th>课程</th>
+			<th>学分</th>
+			<!-- <th>操作</th> -->
+		</tr>
+		
+	</tbody>
+</table>
+
+
+<script>
+	$(function(){
+		//$.post()
+		$.getJSON('http://192.168.140.200:8080/course',function(data){
+			data.forEach(function(item){
+				var newTr = '<tr>'
+					+'<td><input type="checkbox" value="'+item.id+'"></td>'
+					+'<td>'+item.name+'</td>'
+					+'<td>'+item.credit+'</td>'
+					// +'<td>'
+					// 	+'<a href="">删除</a>'
+					// 	+'<a href="">修改</a>'
+					// +'</td>'
+					+'</tr>';
+				$('tbody').append(newTr);
+
+			});
+
+		});
+
+	});
+
+</script>

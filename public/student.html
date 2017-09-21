@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>学生管理</title>
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script type="text/javascript">
+    //封装ajax
+    var ajax={
+      post:function(url,data,handler){
+        var request=new XMLHttpRequest();
+        request.open('post',url,true);
+        //如果是表单编码格式
+        request.setRequestHeader("Content-Type","application/json");
+        request.send(JSON.stringify(data));
+        request.onreadystatechange=function(){
+          if(request.readyState==4){
+            if(request.status==200){
+              handler.call(this,JSON.parse(request.responseText));
+            }
+          }
+        }
+
+      },
+      getJSON:function(url,handler){
+          var request=new XMLHttpRequest();
+          request.open('GET',url,true);
+          request.send();
+          request.onreadystatechange=function(){
+            if(request.readyState==4){
+              if(request.status==200){
+                var text=request.responseText;
+                var json=JSON.parse(text);
+                handler.call(this,json);
+              }
+            }
+          }
+      }
+    }
+    //
+    var studentApi={
+      batchDelete:function(ids){
+        ajax.post("http://looalhost:3000/student/batchDelete",ids,function(data){
+          alert("删除了"+data.affectedRows+"个");
+        })
+      },
+      //加载数据
+      loadData:function(){
+        //清空原有数据
+        var tbody=document.getElementsByTagName("tbody")[0];
+        Array.prototype.slice.call(tbody.children,0).forEach(function(item){
+            tbody.removeChild(item);
+        })
+
+        ajax.getJSON("http://localhost:3000/student/findAll",function(data){
+            //处理data数据
+        data.forEach(function(item){
+        var tbody = document.getElementsByTagName("tbody")[0];
+        var newTr = document.createElement('tr');
+        var newTd1 = document.createElement('td')
+        newTd1.innerHTML = "<input type='checkbox' value='"+item.id+"'>";
+        var newTd2 = document.createElement('td')
+        newTd2.innerText = item.name;
+        var newTd3 = document.createElement('td')
+        newTd3.innerText = item.gender;
+        var newTd4 = document.createElement('td')
+        newTd4.innerText = item.birth;
+        newTr.appendChild(newTd1);
+        newTr.appendChild(newTd2);
+        newTr.appendChild(newTd3);
+        newTr.appendChild(newTd4);
+        tbody.appendChild(newTr);
+      });
+        })
+      }
+    }
+    window.onload = function(){
+      var form = document.forms[0];
+      var btns=document.getElementsByTagName("button");
+        studentApi.loadData();      
+      form.onsubmit = function(event){
+        event.preventDefault();
+      }
+      //删除
+      btns[2].onclick=function(){
+        var tbody=document.getElementsByTagName("tbody")[0];
+        var ids=[];
+        Array.prototype.slice.call(tbody.children,0).forEach(function(item){
+          var inp=item.children[0].children[0];
+          if(inp.checked){
+            ids.push(inp.value);
+          }
+        });
+        //调用删除方法
+        studentApi.batchDelete(ids);
+      }
+      
+      //   var search = document.getElementById('search');
+      //   var param = {key:search.value}
+      //   //ajax
+      //   var action = form.action;
+      //   //创建一个ajax请求对象
+      //   var request = new XMLHttpRequest();
+      //   //发送请求（方式，请求地址，是否异步）
+      //   request.open('POST',action,true);
+      //   request.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+      //   //确定发送的链接
+      //   request.send(encodeFormData(param));
+      //   //request.send(JSON.stringify(param));
+      //   //监听就绪状态的改变，当readyState的取值为４的时候，代表一次请求的完成
+      //   //取值为0请求未发送，1：和服务器链接已建立
+      //   //2：服务器收到了请求；3：正在处理
+      //   request.onreadystatechange = function(){
+      //     if(request.readyState == 4){
+      //       //响应码200/404/500
+      //       if(request.status == 200){
+      //         //将request.response转化成data对象
+      //         var data = JSON.parse(request.responseText);
+      //         updateData(data);
+      //       }
+      //     }
+      //   }
+        
+      //   event.preventDefault();
+      // }
+    }
+    
+        //编码
+    // function encodeFormData(data){
+    //   if(!data){return "";} 
+    //   var pairs = [];
+    //   for(var name in data){
+    //     if(!data.hasOwnProperty(name) || typeof data[name] == "function"){
+    //       continue;
+    //     }
+    //     var value = data[name].toString();
+    //     name = encodeURIComponent(name).replace("%20","+");// 编码
+    //     value = encodeURIComponent(value).replace("%20","+");// 编码
+    //     pairs.push(name+"="+value);
+    //   }
+    //   return pairs.join('&');
+    // }
+
+
+    /*
+    var form_data = encodeFormData({name:'张三+李四',age:12});
+    console.log(form_data);
+    */
+  </script>
+</head>
+<body>
+  <header>
+		<h2>学生选课系统</h2>
+		<div>
+			<ul class="userinfo">
+				<li><a href="">请登录</a></li>
+				<li><a href="">注册</a></li>
+				<li><a href="">欢迎您：xxx</a></li>
+			</ul>
+		</div>
+
+	</header>
+	<article>
+		<section class="leftnav">
+			<ul>
+				<li p='pages/students.html'><a href="javascript:void(0)">学生管理</a></li>
+				<li p='pages/classes.html'><a href="javascript:void(0)">班级管理</a></li>
+				<li p='pages/course.html'><a href="javascript:void(0)">课程管理</a></li>
+				<li><a href="javascript:void(0)">选课管理</a></li>
+			</ul>
+		</section>
+		<section class="content">
+
+
+		</section>
+	</article>
+</body>
+</html>
